@@ -85,4 +85,44 @@ public class RESTServerTest {
 		}
 	}
 	
+	
+	@Test
+	public void toUpperWithErrorTest() {
+		Address address = new Address();
+		Person person = new Person();
+		
+		person.setFirstName("Albert");
+		person.setSecondName("Baranguer");
+		address.setPerson(person);
+		address.setCity("myCity");
+		address.setCountry("myCountry");
+		address.setDoor(1);
+		address.setFloor(2);
+		address.setNumber(3);
+		address.setStreet("myStreet");
+		address.setZipCode("myZipCode");
+		
+		// http://www.mkyong.com/java/jackson-2-convert-java-object-to-from-json/
+		ObjectMapper mapper = new ObjectMapper();
+		
+		String content;
+		
+		try {
+			content = mapper.writeValueAsString(address);
+		} catch (JsonProcessingException e1) {
+			content = "";
+		}
+		
+		try {
+			mvc.perform(post("/toupperwitherror")
+					.contentType(MediaType.APPLICATION_JSON)
+					.content( content ))
+			.andExpect(status().isOk())
+			.andExpect(jsonPath("$.description", is("error description : ALBERT BARANGUER")));
+		} catch (Exception e) {
+			logger.debug("Error : "  + e.getMessage());
+			e.printStackTrace();
+		}
+	}
+	
 }
